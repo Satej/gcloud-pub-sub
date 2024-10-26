@@ -45,3 +45,37 @@ def callback(message):
 
 future = subscriber.subscriber(subscription_name, callback)
 ```
+
+# Subscribing with Pub/Sub using synchronous pull
+```bash
+gcloud pubsub subscriptions create --topic sandiego mySub1
+```
+
+```bash
+gcloud pubsub subscriptions pull --auto-ack mySub1
+```
+
+```python
+import time
+from google.cloud import pubsub_v1
+
+subscriber = pubsub_v1.SubscriberClient()
+subscription_path = subscriber.subscription_path(project_id, subscription_name)
+
+NUM_MESSAGES = 2
+ACK_DEADLINE = 30
+SLEEP_TIME = 10
+
+# The subscriber pulls a specific number of messages.
+response = subscriber.pull(subscription_path, max_messages=NUM_MESSAGES)
+```
+
+# Change the batch settings in Pub/Sub
+```python
+from google.cloud import pubsub
+from google.cloud.pubsub import types
+
+client = pubsub.PublisherClient(
+  batch_settings=BatchSettings(max_messages=500),
+)
+```
